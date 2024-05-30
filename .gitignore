@@ -1,0 +1,7 @@
+# Logs
+logs
+*.log
+
+# Node.js environment
+node_modules/
+npm-debug.log
