@@ -1,6 +1,6 @@
 {
 	"name": "svg-icons-view",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "A CLI tool for previewing all SVG files within a project. This tool works by starting a local HTTP server, allowing you to preview the SVG files in your browser.",
 	"type": "module",
 	"main": "dist/index.js",
@@ -10,9 +10,9 @@
 		"start": "node dist/index.js"
 	},
 	"bin": {
-		"icons": "./dist/index.js"
+		"icons": "bin/index.mjs"
 	},
-	"author": "",
+	"author": "zyc",
 	"license": "MIT",
 	"devDependencies": {
 		"@types/cors": "^2.8.17",
