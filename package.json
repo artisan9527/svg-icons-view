@@ -25,6 +25,9 @@
 		"cors": "^2.8.5",
 		"express": "^4.19.2"
 	},
+	"repository": {
+		"url": "https://github.com/artisan9527/svg-icons-view.git"
+	},
 	"keywords": [
 		"svg",
 		"preview",
