@@ -1,4 +1,3 @@
-// src/server.ts
 import express from "express";
 import cors from "cors"; // 导入 cors 中间件
 import fs from "fs"; // 导入 fs 模块

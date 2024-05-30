@@ -293,7 +293,6 @@ function renameFile(fileName, svg) {
                     console.error('Failed to rename file:', error);
                 });
         } else {
-            console.log(newName);
             if (newName !== null) showMessage("操作失败：新文件名为空", "warning");
         }
     });
@@ -332,7 +331,7 @@ function deleteFile(svg) {
 
 // 添加按钮到页面右上角
 const toggleButton = document.createElement('button');
-toggleButton.textContent = '切换主题';
+toggleButton.textContent = '切换背景';
 toggleButton.style.position = 'absolute';
 toggleButton.style.top = '20px';
 toggleButton.style.right = '20px';
@@ -340,10 +339,10 @@ toggleButton.style.width = '100px';
 toggleButton.style.height = '32px';
 toggleButton.style.padding = '8px';
 toggleButton.style.cursor = 'pointer';
-toggleButton.style.backgroundColor = '#FFA500'; // 橙色
+toggleButton.style.backgroundColor = '#007bff';
 toggleButton.style.color = '#fff';
 toggleButton.style.border = 'none';
-toggleButton.style.borderRadius = '4px'; // 添加4像素圆角
+toggleButton.style.borderRadius = '4px';
 document.body.appendChild(toggleButton);
 
 

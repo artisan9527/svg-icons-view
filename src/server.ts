@@ -1,4 +1,3 @@
-// src/server.ts
 import express from "express";
 import cors from "cors"; // 导入 cors 中间件
 import fs from "fs"; // 导入 fs 模块
@@ -6,7 +5,6 @@ import path from "path"; // 导入 path 模块
 import { getAllSvgFiles, renameFile, deleteFile } from "./utils.js";
 import { createServer } from "http";
 import { AddressInfo } from "net";
-import { exec } from "child_process";
 import open from "open";
 
 const app = express();

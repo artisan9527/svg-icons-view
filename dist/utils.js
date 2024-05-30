@@ -18,7 +18,6 @@ export function getAllSvgFiles(dir = process.cwd()) {
             const name = basename(filePath);
             const ignore = name === ".git" || (ignoreNodeModules && name === "node_modules");
             if (statSync(filePath).isDirectory() && !ignore) {
-                console.log(filePath);
                 traverseDir(filePath);
             }
         });
