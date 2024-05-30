@@ -1,7 +1,8 @@
 import { readdirSync, statSync, renameSync, unlinkSync } from "fs";
-import { join } from "path";
+import { join, basename } from "path";
 export function getAllSvgFiles(dir = process.cwd()) {
     const folders = [];
+    const ignoreNodeModules = !process.argv.includes("--node_modules");
     // 递归遍历目录
     function traverseDir(currentDir) {
         const files = readdirSync(currentDir);
@@ -12,10 +13,12 @@ export function getAllSvgFiles(dir = process.cwd()) {
                 svgs: svgs,
             });
         }
-        const ignoreNodeModules = !process.argv.includes("--node_modules");
         files.forEach((file) => {
             const filePath = join(currentDir, file);
-            if (statSync(filePath).isDirectory() && (!ignoreNodeModules || filePath !== "node_modules")) {
+            const name = basename(filePath);
+            const ignore = name === ".git" || (ignoreNodeModules && name === "node_modules");
+            if (statSync(filePath).isDirectory() && !ignore) {
+                console.log(filePath);
                 traverseDir(filePath);
             }
         });
