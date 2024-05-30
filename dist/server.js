@@ -5,7 +5,7 @@ import fs from "fs"; // 导入 fs 模块
 import path from "path"; // 导入 path 模块
 import { getAllSvgFiles, renameFile, deleteFile } from "./utils.js";
 import { createServer } from "http";
-import { exec } from "child_process";
+import open from "open";
 const app = express();
 app.use(express.json());
 app.use(cors()); // 使用 cors 中间件
@@ -82,11 +82,8 @@ function startServer() {
     server.listen(0, () => {
         const port = server.address().port;
         const url = `http://localhost:${port}`;
-        exec(`start ${url}`, (error) => {
-            if (error) {
-                console.error(`exec error: ${error}`);
-                return;
-            }
+        open(url).catch((e) => {
+            console.error(`exec error: ${e}`);
         });
         console.log(`local website: ${url}`);
     });

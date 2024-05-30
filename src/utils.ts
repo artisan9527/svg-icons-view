@@ -22,9 +22,11 @@ export function getAllSvgFiles(dir: string = process.cwd()): Folder[] {
 			});
 		}
 
+		const ignoreNodeModules = !process.argv.includes("--node_modules");
+
 		files.forEach((file) => {
 			const filePath = join(currentDir, file);
-			if (statSync(filePath).isDirectory()) {
+			if (statSync(filePath).isDirectory() && (!ignoreNodeModules || filePath !== "node_modules")) {
 				traverseDir(filePath);
 			}
 		});

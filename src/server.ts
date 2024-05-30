@@ -7,6 +7,7 @@ import { getAllSvgFiles, renameFile, deleteFile } from "./utils.js";
 import { createServer } from "http";
 import { AddressInfo } from "net";
 import { exec } from "child_process";
+import open from "open";
 
 const app = express();
 app.use(express.json());
@@ -93,11 +94,8 @@ function startServer() {
 	server.listen(0, () => {
 		const port = (server.address() as AddressInfo).port;
 		const url = `http://localhost:${port}`;
-		exec(`start ${url}`, (error) => {
-			if (error) {
-				console.error(`exec error: ${error}`);
-				return;
-			}
+		open(url).catch((e) => {
+			console.error(`exec error: ${e}`);
 		});
 		console.log(`local website: ${url}`);
 	});

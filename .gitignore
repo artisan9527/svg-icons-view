@@ -5,3 +5,4 @@ logs
 # Node.js environment
 node_modules/
 npm-debug.log
+assets

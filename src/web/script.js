@@ -9,35 +9,98 @@ let dataSource = [];
 // 获取文件列表并渲染
 async function fetchSvgFiles() {
     try {
+        toggleLoading(true);
         const response = await fetch('/svgs');
         dataSource = await response.json();
         renderSvgFiles(dataSource);
+        toggleLoading(false);
     } catch (error) {
+        toggleLoading(false);
+        showMessage('Failed to fetch SVG files', 'error');
         console.error('Failed to fetch SVG files:', error);
     }
 }
 
-// 显示复制成功状态的函数
-function showCopySuccess() {
-    const copySuccessBox = document.createElement('div');
-    copySuccessBox.textContent = '复制成功';
-    copySuccessBox.style.position = 'fixed';
-    copySuccessBox.style.top = '20px';
-    copySuccessBox.style.left = '50%';
-    copySuccessBox.style.transform = 'translateX(-50%)';
-    copySuccessBox.style.padding = '8px 24px'; // 修改左右内边距为24px，上下内边距为8px
-    copySuccessBox.style.backgroundColor = '#ffffff';
-    copySuccessBox.style.color = '#008000'; // 绿色
-    copySuccessBox.style.border = '1px solid #ddd'; // 浅色边框
-    copySuccessBox.style.borderRadius = '4px'; // 圆角
-    copySuccessBox.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)'; // 浅色阴影
-    document.body.appendChild(copySuccessBox);
+function toggleLoading(show) {
+    let loader = document.getElementById('loader');
 
-    // 两秒后隐藏复制成功状态
+    if (show) {
+        if (!loader) {
+            const loaderDiv = document.createElement('div');
+            loaderDiv.id = 'loader';
+            loaderDiv.innerHTML = '<div class="spinner"></div>';
+            document.body.appendChild(loaderDiv);
+            loader = loaderDiv;
+        }
+        loader.style.display = 'block';
+    } else {
+        if (loader) {
+            loader.style.display = 'none';
+        }
+    }
+}
+
+
+
+// 显示复制成功状态的函数
+function showMessage(message, status = 'success') {
+    const messageBox = document.createElement('div');
+    messageBox.textContent = message;
+    messageBox.style.position = 'fixed';
+    messageBox.style.top = '20px';
+    messageBox.style.left = '50%';
+    messageBox.style.transform = 'translateX(-50%)';
+    messageBox.style.padding = '8px 24px'; // 修改左右内边距为24px，上下内边距为8px
+    messageBox.style.backgroundColor = '#ffffff';
+    messageBox.style.border = '1px solid #ddd'; // 浅色边框
+    messageBox.style.borderRadius = '4px'; // 圆角
+    messageBox.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)'; // 浅色阴影
+
+    // 根据状态设置字体颜色
+    switch (status) {
+        case 'success':
+            messageBox.style.color = '#008000'; // 绿色
+            break;
+        case 'warning':
+            messageBox.style.color = '#ff8c00'; // 橙色
+            break;
+        case 'error':
+            messageBox.style.color = '#ff0000'; // 红色
+            break;
+        default:
+            messageBox.style.color = '#000000'; // 默认为黑色
+            break;
+    }
+
+    document.body.appendChild(messageBox);
+
+    // 两秒后隐藏状态消息
     setTimeout(() => {
-        copySuccessBox.remove();
+        messageBox.remove();
     }, 2000);
 }
+
+function showNoDataMessage(element) {
+    const noDataDiv = document.createElement('div');
+    noDataDiv.classList.add('no-data-message');
+
+    const svgImage = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svgImage.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    svgImage.setAttribute('width', '100');
+    svgImage.setAttribute('height', '100');
+    svgImage.setAttribute('viewBox', '0 0 24 24');
+    svgImage.innerHTML = '<path fill="none" d="M0 0h24v24H0V0z"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 7h2v2h-2zm0 4h2v6h-2z"/>';
+
+    const messageText = document.createElement('p');
+    messageText.textContent = '暂无数据';
+
+    noDataDiv.appendChild(svgImage);
+    noDataDiv.appendChild(messageText);
+
+    element.innerHTML = '';
+    element.appendChild(noDataDiv);
+}
+
 
 
 function createBubble() {
@@ -111,16 +174,17 @@ function createBubble() {
     };
 }
 
-
-
 // 使用示例
 const bubble = createBubble();
-
 
 // 渲染文件列表
 function renderSvgFiles(folders) {
     const app = document.getElementById('app');
     app.innerHTML = ''; // 清空现有内容
+    if (!folders.length) {
+        showNoDataMessage(document.body);
+        return;
+    }
     folders.forEach(folder => {
         const folderDiv = document.createElement('div');
         folderDiv.classList.add('folder');
@@ -153,7 +217,7 @@ function renderSvgFiles(folders) {
             // 双击复制文件名
             fileDiv.addEventListener('dblclick', () => {
                 navigator.clipboard.writeText(fileName.textContent);
-                showCopySuccess(); // 显示复制成功状态
+                showMessage("复制成功"); // 显示复制成功状态
             });
 
             // 右键菜单
@@ -197,7 +261,7 @@ window.addEventListener('DOMContentLoaded', fetchSvgFiles);
 // 重命名操作
 function renameFile(fileName, svg) {
     modal.prompt('新文件名：', fileName, (newName) => {
-        newName = newName ? newName.trim() : '';
+        newName = newName ? newName.trim() : newName;
         if (newName) {
             const pathSegments = svg.split(/[\\\/]/); // 使用正则表达式匹配斜杠和反斜杠
             const fileName = pathSegments.pop(); // 获取文件名
@@ -218,15 +282,19 @@ function renameFile(fileName, svg) {
                 .then(response => {
                     if (response.ok) {
                         fileName.textContent = newName;
+                        showMessage("操作成功");
                         fetchSvgFiles(); // 重命名完成后刷新文件列表
                     } else {
-                        throw new Error('Failed to rename file.');
+                        showMessage("Failed to rename file.", "error");
                     }
                 })
                 .catch(error => {
+                    showMessage(`Failed to rename file: ${error.message}`, "error");
                     console.error('Failed to rename file:', error);
-                    modal.alert(error.message);
                 });
+        } else {
+            console.log(newName);
+            if (newName !== null) showMessage("操作失败：新文件名为空", "warning");
         }
     });
 }
@@ -247,23 +315,25 @@ function deleteFile(svg) {
             })
                 .then(response => {
                     if (response.ok) {
+                        showMessage('文件删除成功', 'success');
                         fetchSvgFiles(); // 删除完成后刷新文件列表
                     } else {
-                        throw new Error('Failed to delete file.');
+                        showMessage('删除文件失败', 'error');
                     }
                 })
                 .catch(error => {
+                    showMessage(`Failed to delete file: ${error.message}`, 'error');
                     console.error('Failed to delete file:', error);
-                    modal.alert(error.message);
                 });
         }
     });
 }
 
+
 // 添加按钮到页面右上角
 const toggleButton = document.createElement('button');
 toggleButton.textContent = '切换主题';
-toggleButton.style.position = 'fixed';
+toggleButton.style.position = 'absolute';
 toggleButton.style.top = '20px';
 toggleButton.style.right = '20px';
 toggleButton.style.width = '100px';
@@ -289,6 +359,21 @@ toggleButton.addEventListener('click', () => {
     isDarkMode = !isDarkMode;
     renderSvgFiles(dataSource);
 });
+
+// 添加提示
+function addHelp() {
+    const div = document.createElement('div');
+    div.style.position = 'absolute'
+    div.style.top = '30px';
+    div.style.right = '180px';
+    div.style.fontSize = '12px';
+    div.style.color = '#999';
+    div.style.letterSpacing = '2px';
+    div.innerText = '操作说明：鼠标左键双击复制，鼠标右键单击呼出菜单';
+    document.body.appendChild(div);
+}
+
+addHelp();
 
 window.addEventListener('beforeunload', function () {
     // 向 "/exit" 接口发送 POST 请求

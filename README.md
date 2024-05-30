@@ -4,6 +4,8 @@
 
 `svg-icons-view` is a CLI tool that allows you to preview, rename, and delete SVG files within your project. It achieves this by starting a local HTTP server and opening a browser window for previewing the SVG files.
 
+**By default, the `node_modules` folder is ignored. To include it, please use the `--node_modules` parameter.**
+
 ## Installation
 
 To install `svg-icons-view`, use npm:

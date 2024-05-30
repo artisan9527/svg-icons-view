@@ -138,8 +138,6 @@ class Modal {
             modalFooter.style.justifyContent = 'flex-end';
             modalFooter.style.gap = '8px';
         }
-
-        document.body.style.overflow = 'hidden'; // 隐藏页面滚动条
     }
 
     // 隐藏弹窗
@@ -147,7 +145,6 @@ class Modal {
         this.modalContainer.style.opacity = '0';
         setTimeout(() => {
             this.modalContainer.style.display = 'none';
-            document.body.style.overflow = ''; // 恢复页面滚动条
         }, 300);
     }
 }
